@@ -4,8 +4,15 @@
   "version": "1.0",
   "name": "Ghastling Plus",
   "description": "",
-  "authors": [],
-  "contact": {},
+  "authors": [
+    "钓鱼竿呀(diaoyugan)"
+  ],
+  "contact": {
+    "sources": "https://github.com/diaoyugan/Ghastling-Plus",
+    "issues": "https://github.com/diaoyugan/Ghastling-Plus/issues",
+    "email": "diaoyugan666@qq.com",
+    "homepage": "https://modrinth.com/mod/ghastling_plus"
+  },
   "license": "GPL-3.0",
   "icon": "assets/ghastling_plus/icon.png",
   "environment": "*",
