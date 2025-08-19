@@ -1,0 +1,14 @@
+{
+  "modmenu.nameTranslation.vein_mine": "小恶魂+",
+  "modmenu.descriptionTranslation.vein_mine": "骑乘或控制小恶魂的生长",
+  "modmenu.summaryTranslation.vein_mine": "骑乘或控制小恶魂的生长",
+  "gp.growStopped": "该生物的生长已处于暂停状态",
+  "gp.growStop": "已暂停该生物的生长（生长进度被冻结）",
+  "gp.notPaused": "该生物当前未被暂停",
+  "gp.unpaused": "已解除暂停，生长恢复正常",
+  "gp.cannotRevert": "该生物当前被暂停，无法回退年龄",
+  "gp.ageReverted": "已使其年龄回退",
+  "gp.snowballPaused": "该生物的生长被暂停，无法加速生长",
+  "gp.onlyBabySaddle": "只有幼年可以被装备鞍",
+  "gp.saddledAndRidden": "已装备鞍并骑上"
+}

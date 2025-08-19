@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "top.diaoyugan.ghastling_plus.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "MixinHappyGhastEntity",
+    "MixinPassiveEntity_AgeFreeze"
+  ],
+  "client": [],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}

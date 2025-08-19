@@ -1,0 +1,15 @@
+{
+  "modmenu.nameTranslation.vein_mine": "Ghastling+",
+  "modmenu.descriptionTranslation.vein_mine": "Ride or control the growth of Ghastlings",
+  "modmenu.summaryTranslation.vein_mine": "Ride or control the growth of Ghastlings",
+  "gp.growStopped": "The entity's growth is currently paused",
+  "gp.growStop": "Paused the entity's growth (growth progress frozen)",
+  "gp.notPaused": "The entity is not currently paused",
+  "gp.unpaused": "Growth resumed; the entity is no longer paused",
+  "gp.cannotRevert": "The entity is paused and cannot revert age",
+  "gp.ageReverted": "The entity's age has been reverted",
+  "gp.snowballPaused": "Growth is paused; snowball has no effect",
+  "gp.onlyBabySaddle": "Only baby Ghastlings can be saddled",
+  "gp.saddledAndRidden": "Saddled and mounted"
+
+}
