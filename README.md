@@ -1,6 +1,7 @@
 # Ghastling-Plus
 
 **Overview**
+
 The Ghastling-Plus mod optimized for Ghastlings and HappyGhast
 
 ## How to Use
