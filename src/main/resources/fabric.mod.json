@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "ghastling_plus",
-  "version": "1.0",
+  "version": "${version}",
   "name": "Ghastling Plus",
   "description": "",
   "authors": [
