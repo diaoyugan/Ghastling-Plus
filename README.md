@@ -1,7 +1,7 @@
 # Ghastling-Plus
 
 **Overview**
-The Ghastling-Plus mod allows players to control the growth, riding, and interaction of **Happy Ghasts** using specific items.
+The Ghastling-Plus mod optimized for Ghastlings and HappyGhast
 
 ## How to Use
 
