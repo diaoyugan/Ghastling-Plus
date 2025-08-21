@@ -22,4 +22,4 @@ The Ghastling-Plus mod optimized for Ghastlings and HappyGhast
 
 ## Interaction
 
-- **Stealth (default: Shift) + Interact**: Using the sneak key while interacting with a Happy Ghast allows it to stay in place, even if its AI would normally move it around.
+- **Sneak (default: Shift) + Interact**: Using the sneak key while interacting with a Happy Ghast allows it to stay in place, even if its AI would normally move it around.
