@@ -76,21 +76,25 @@ public abstract class MixinHappyGhastEntity {
    @Inject(method = "tick", at = @At("HEAD"))
    private void gh$tickPreserveManualStaying(CallbackInfo ci) {
       HappyGhastEntity gh = (HappyGhastEntity)(Object)this;
+      boolean manual = gh.getDataTracker().get(HappyGhastData.STAYING);
 
-      // 读取 NBT 状态
-      boolean manual = gh.getDataTracker().get(HappyGhastData.STAYING); // 这里 DataTracker 已经在 readCustomData 时同步 NBT
+      try {
+         java.lang.reflect.Field stillField = HappyGhastEntity.class.getDeclaredField("stillTimeout");
+         stillField.setAccessible(true);
 
-      if (manual) {
-         // 如果手动停留，保持 stillTimeout > 0，防止原版清零
-         try {
-            java.lang.reflect.Field stillField = HappyGhastEntity.class.getDeclaredField("stillTimeout");
-            stillField.setAccessible(true);
+         if (manual) {
             int current = (int) stillField.get(gh);
             if (current <= 0) {
                stillField.set(gh, 1);
             }
-         } catch (Exception ignored) {}
-      }
+         } else {
+            // 退出手动模式时，确保复位
+            int current = (int) stillField.get(gh);
+            if (current > 0) {
+               stillField.set(gh, 0);
+            }
+         }
+      } catch (Exception ignored) {}
    }
 
 }
