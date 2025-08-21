@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "HappyGhastAccessor",
+    "HappyGhastInvoker",
     "MixinHappyGhastEntity",
     "MixinHappyGhastMobEntity",
     "MobEntityAccessor"

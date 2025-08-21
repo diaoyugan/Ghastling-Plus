@@ -3,16 +3,18 @@ package top.diaoyugan.ghastling_plus.mixin;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.HappyGhastEntity;
 import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import top.diaoyugan.ghastling_plus.HappyGhastData;
-import top.diaoyugan.ghastling_plus.StayGoal;
 
 @Mixin(HappyGhastEntity.class)
 public abstract class MixinHappyGhastEntity {
@@ -58,13 +60,37 @@ public abstract class MixinHappyGhastEntity {
          }
       }
    }
-   @Inject(method = "initGoals", at = @At("TAIL"), require = 1)
-   private void gh$initGoals(CallbackInfo ci) {
-      // 通过 MobEntityAccessor 安全取到 goalSelector（不用 shadow 父类字段）
-      MobEntityAccessor accessor = (MobEntityAccessor) (Object) this;
-      GoalSelector gs = accessor.gh_getGoalSelector();
-      // 添加优先级 0 的 StayGoal，拦截移动
-      gs.add(0, new StayGoal((MobEntity) (Object) this));
+   // 保存手动待命状态到 NBT
+   @Inject(method = "writeCustomData", at = @At("TAIL"))
+   private void writeManualStaying(WriteView nbt, CallbackInfo ci) {
+      HappyGhastEntity gh = (HappyGhastEntity)(Object)this;
+      nbt.putBoolean("ManualStaying", gh.getDataTracker().get(HappyGhastData.STAYING));
+   }
+
+   @Inject(method = "readCustomData", at = @At("TAIL"))
+   private void readManualStaying(ReadView nbt, CallbackInfo ci) {
+      HappyGhastEntity gh = (HappyGhastEntity)(Object)this;
+      gh.getDataTracker().set(HappyGhastData.STAYING, nbt.getBoolean("ManualStaying", false));
+   }
+
+   @Inject(method = "tick", at = @At("HEAD"))
+   private void gh$tickPreserveManualStaying(CallbackInfo ci) {
+      HappyGhastEntity gh = (HappyGhastEntity)(Object)this;
+
+      // 读取 NBT 状态
+      boolean manual = gh.getDataTracker().get(HappyGhastData.STAYING); // 这里 DataTracker 已经在 readCustomData 时同步 NBT
+
+      if (manual) {
+         // 如果手动停留，保持 stillTimeout > 0，防止原版清零
+         try {
+            java.lang.reflect.Field stillField = HappyGhastEntity.class.getDeclaredField("stillTimeout");
+            stillField.setAccessible(true);
+            int current = (int) stillField.get(gh);
+            if (current <= 0) {
+               stillField.set(gh, 1);
+            }
+         } catch (Exception ignored) {}
+      }
    }
 
 }

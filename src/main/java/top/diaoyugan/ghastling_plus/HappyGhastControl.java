@@ -10,6 +10,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import top.diaoyugan.ghastling_plus.mixin.HappyGhastAccessor;
 
 import java.util.Map;
 import java.util.UUID;
@@ -141,13 +142,20 @@ public final class HappyGhastControl {
    }
 
    private static void toggleStayingMode(HappyGhastEntity gh, net.minecraft.entity.player.PlayerEntity player) {
-      boolean staying = gh.getDataTracker().get(HappyGhastData.STAYING);
-      gh.getDataTracker().set(HappyGhastData.STAYING, !staying);
+      boolean current = gh.getDataTracker().get(HappyGhastData.STAYING);
+      boolean next = !current;
+      gh.getDataTracker().set(HappyGhastData.STAYING, next);
 
-      if (!staying) {
-         if (gh.hasPassengers()) gh.removeAllPassengers();
-         gh.getMoveControl().moveTo(gh.getX(), gh.getY(), gh.getZ(), 0.0D);
-         gh.setVelocity(0, 0, 0);
+      // 同步原版 STAY 标记显示效果
+      TrackedData<Boolean> STAY = top.diaoyugan.ghastling_plus.mixin.HappyGhastAccessor.gh_getStayingStill();
+      gh.getDataTracker().set(STAY, next);
+
+      // 给玩家发送提示
+      if (player instanceof ServerPlayerEntity serverPlayer) {
+         Messages.sendMessage(serverPlayer,
+                 Text.translatable(next ? "gp.manualStayingOn" : "gp.manualStayingOff"), true);
       }
+
    }
+
 }
