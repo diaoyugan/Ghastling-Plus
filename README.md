@@ -18,7 +18,7 @@ The Ghastling-Plus mod optimized for Ghastlings and HappyGhast
 | **Sugar**        | Unpause growth | Used when the Happy Ghast's growth is paused; resumes normal growth.                                                                                                   |
 | **Bone**         | Revert growth  | Reverts 60 seconds of growth; only works if not paused.                                                                                                                  |
 | **Snowball**     | Interact       | If growth is paused, displays a message that interaction is not possible. Otherwise, triggers the entity's default interaction behavior.                               |
-| **Saddle**       | Equip and ride | Can only be equipped on baby Happy Ghasts for riding; adult Happy Ghasts cannot be directly saddled. After becoming an adult, the saddle will automatically disappear. |
+| **Saddle**       | Equip and ride | Can only be equipped on baby Happy Ghasts for riding; adult Happy Ghasts cannot be saddled. After becoming an adult, the saddle will automatically disappear. |
 
 ## Interaction
 
