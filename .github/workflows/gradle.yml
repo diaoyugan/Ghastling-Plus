@@ -32,7 +32,9 @@ jobs:
 
       # 构建项目
       - name: Build Fabric Mod
-        run: ./gradlew build
+        run: |
+          chmod +x ./gradlew
+          ./gradlew build
 
       # 读取 gradle.properties 的 mod_version
       - name: Get mod version
