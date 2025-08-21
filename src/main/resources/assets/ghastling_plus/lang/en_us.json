@@ -1,7 +1,7 @@
 {
   "modmenu.nameTranslation.ghastling_plus": "Ghastling+",
-  "modmenu.descriptionTranslation.ghastling_plus": "Ride or control the growth of Ghastlings",
-  "modmenu.summaryTranslation.ghastling_plus": "Ride or control the growth of Ghastlings",
+  "modmenu.descriptionTranslation.ghastling_plus": "Optimized for Ghastlings and HappyGhast",
+  "modmenu.summaryTranslation.ghastling_plus": "Optimized for Ghastlings and HappyGhast",
   "gp.growStopped": "The entity's growth is currently paused",
   "gp.growStop": "Paused the entity's growth (growth progress frozen)",
   "gp.notPaused": "The entity is not currently paused",

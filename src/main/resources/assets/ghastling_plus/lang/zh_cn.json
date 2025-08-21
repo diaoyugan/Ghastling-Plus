@@ -1,7 +1,7 @@
 {
   "modmenu.nameTranslation.ghastling_plus": "小恶魂+",
-  "modmenu.descriptionTranslation.ghastling_plus": "骑乘或控制小恶魂的生长",
-  "modmenu.summaryTranslation.ghastling_plus": "骑乘或控制小恶魂的生长",
+  "modmenu.descriptionTranslation.ghastling_plus": "对快乐恶魂和小恶魂进行优化",
+  "modmenu.summaryTranslation.ghastling_plus": "对快乐恶魂和小恶魂进行优化",
   "gp.growStopped": "该生物的生长已处于暂停状态",
   "gp.growStop": "已暂停该生物的生长（生长进度被冻结）",
   "gp.notPaused": "该生物当前未被暂停",
