@@ -20,6 +20,7 @@ public abstract class MixinPassiveEntity_AgeFreeze {
       gh$prevAge = ((PassiveEntity)(Object)this).getBreedingAge();
    }
 
+
    @Inject(method = "tickMovement", at = @At("TAIL"))
    private void gh$restoreIfPaused(CallbackInfo ci) {
       Object self = this;

@@ -4,8 +4,10 @@
   "package": "top.diaoyugan.ghastling_plus.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "HappyGhastAccessor",
     "MixinHappyGhastEntity",
-    "MixinPassiveEntity_AgeFreeze"
+    "MixinHappyGhastMobEntity",
+    "MobEntityAccessor"
   ],
   "client": [],
   "injectors": {

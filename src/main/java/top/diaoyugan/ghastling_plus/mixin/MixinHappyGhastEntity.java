@@ -1,8 +1,9 @@
 package top.diaoyugan.ghastling_plus.mixin;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.DataTracker.Builder;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.HappyGhastEntity;
 import net.minecraft.storage.ReadView;
 import net.minecraft.storage.WriteView;
@@ -11,15 +12,16 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import top.diaoyugan.ghastling_plus.HappyGhastData;
+import top.diaoyugan.ghastling_plus.StayGoal;
 
 @Mixin(HappyGhastEntity.class)
 public abstract class MixinHappyGhastEntity {
 
-   // 你原有的三段照旧……
-   @Inject(method = "initDataTracker", at = @At("TAIL"))
+   @Inject(method = "initDataTracker", at = @At("TAIL"), require = 1)
    private void gh$initDataTracker(DataTracker.Builder builder, CallbackInfo ci) {
       builder.add(HappyGhastData.SADDLED, false);
       builder.add(HappyGhastData.AGE_PAUSED, false);
+      builder.add(HappyGhastData.STAYING, false);
    }
 
    @Inject(method = "writeCustomData", at = @At("TAIL"))
@@ -56,4 +58,13 @@ public abstract class MixinHappyGhastEntity {
          }
       }
    }
+   @Inject(method = "initGoals", at = @At("TAIL"), require = 1)
+   private void gh$initGoals(CallbackInfo ci) {
+      // 通过 MobEntityAccessor 安全取到 goalSelector（不用 shadow 父类字段）
+      MobEntityAccessor accessor = (MobEntityAccessor) (Object) this;
+      GoalSelector gs = accessor.gh_getGoalSelector();
+      // 添加优先级 0 的 StayGoal，拦截移动
+      gs.add(0, new StayGoal((MobEntity) (Object) this));
+   }
+
 }

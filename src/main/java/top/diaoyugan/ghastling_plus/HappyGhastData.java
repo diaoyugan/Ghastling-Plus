@@ -8,6 +8,7 @@ import net.minecraft.entity.passive.HappyGhastEntity;
 public final class HappyGhastData {
    public static final TrackedData<Boolean> SADDLED = DataTracker.registerData(HappyGhastEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
    public static final TrackedData<Boolean> AGE_PAUSED = DataTracker.registerData(HappyGhastEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+   public static final TrackedData<Boolean> STAYING = DataTracker.registerData(HappyGhastEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
    private HappyGhastData() {
    }

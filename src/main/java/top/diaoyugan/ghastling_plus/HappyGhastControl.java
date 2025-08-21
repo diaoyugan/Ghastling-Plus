@@ -1,110 +1,153 @@
 package top.diaoyugan.ghastling_plus;
 
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
+import net.minecraft.entity.ai.control.MoveControl;
+import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.passive.HappyGhastEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public final class HappyGhastControl {
 
+   private static final Map<UUID, Long> LAST_INTERACT_TICK = new ConcurrentHashMap<>();
+
    public static void init() {
-      // 注册实体交互事件
       UseEntityCallback.EVENT.register((player, world, hand, entity, hit) -> {
 
-         // 只处理 HappyGhast 实体
-         if (!(entity instanceof HappyGhastEntity gh)) {
-            return ActionResult.PASS;
-         }
-
-         // 客户端直接放行
-         if (world.isClient) {
-            return ActionResult.PASS;
-         }
+         if (!canProcess(player, world, hand, entity)) return ActionResult.PASS;
 
          ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
+         HappyGhastEntity gh = (HappyGhastEntity) entity;
          ItemStack stack = player.getStackInHand(hand);
+
+         // 防抖
+         if (!shouldProcessInteraction(player.getUuid(), world.getTime())) return ActionResult.PASS;
 
          boolean paused = gh.getDataTracker().get(HappyGhastData.AGE_PAUSED);
          boolean saddled = gh.getDataTracker().get(HappyGhastData.SADDLED);
 
-         // 金苹果 → 暂停生长
-         if (stack.isOf(Items.GOLDEN_APPLE)) {
-            if (paused) {
-               Messages.sendMessage(serverPlayer, Text.translatable("gp.growStopped"), true);
-            } else {
-               gh.getDataTracker().set(HappyGhastData.AGE_PAUSED, true);
-               if (!player.isCreative()) stack.decrement(1);
-               Messages.sendMessage(serverPlayer, Text.translatable("gp.growStop"), true);
-            }
-            return ActionResult.SUCCESS;
-         }
+         // 处理物品交互
+         if (stack.isOf(Items.GOLDEN_APPLE)) return handleGoldenApple(gh, stack, serverPlayer, paused);
+         if (stack.isOf(Items.SUGAR)) return handleSugar(gh, stack, serverPlayer, paused);
+         if (stack.isOf(Items.BONE)) return handleBone(gh, stack, serverPlayer, paused);
+         if (stack.isOf(Items.SNOWBALL)) return handleSnowball(gh, stack, serverPlayer, paused, player, hand);
+         if (stack.isOf(Items.LEAD)) return handleLead(gh, stack, player, hand);
+         if (saddled && !gh.hasPassengers()) { player.startRiding(gh); return ActionResult.SUCCESS; }
+         if (stack.isOf(Items.SADDLE)) return handleSaddle(gh, stack, serverPlayer, player);
 
-         // 糖 → 取消暂停
-         if (stack.isOf(Items.SUGAR)) {
-            if (!paused) {
-               Messages.sendMessage(serverPlayer, Text.translatable("gp.notPaused"), true);
-               return ActionResult.PASS;
-            }
-            gh.getDataTracker().set(HappyGhastData.AGE_PAUSED, false);
-            if (!player.isCreative()) stack.decrement(1);
-            Messages.sendMessage(serverPlayer, Text.translatable("gp.unpaused"), true);
-            return ActionResult.SUCCESS;
-         }
-
-         // 骨头 → 倒退生长
-         if (stack.isOf(Items.BONE)) {
-            if (paused) {
-               Messages.sendMessage(serverPlayer, Text.translatable("gp.cannotRevert"), true);
-            } else {
-               gh.growUp(-60, true);
-               if (!player.isCreative()) stack.decrement(1);
-               Messages.sendMessage(serverPlayer, Text.translatable("gp.ageReverted"), true);
-            }
-            return ActionResult.SUCCESS;
-         }
-
-         // 雪球 → 交互
-         if (stack.isOf(Items.SNOWBALL)) {
-            if (paused) {
-               Messages.sendMessage(serverPlayer, Text.translatable("gp.snowballPaused"), true);
-               return ActionResult.SUCCESS;
-            }
-            return gh.interact(player, hand);
-         }
-
-         // 拴绳 → 保持正常使用
-         if (stack.isOf(Items.LEAD)) {
-            int originalCount = stack.getCount();
-            ActionResult result = gh.interact(player, hand);
-            if (player.getAbilities().creativeMode) stack.setCount(originalCount);
-            return result;
-         }
-
-         // 已装备鞍 → 直接骑乘
-         if (saddled) {
-            if (!gh.hasPassengers()) {
-               player.startRiding(gh);
-            }
-            return ActionResult.SUCCESS;
-         }
-
-         // 鞍 → 装鞍并骑乘
-         if (stack.isOf(Items.SADDLE)) {
-            if (!gh.isBaby()) {
-               Messages.sendMessage(serverPlayer, Text.translatable("gp.onlyBabySaddle"), true);
-               return ActionResult.PASS;
-            }
-            gh.getDataTracker().set(HappyGhastData.SADDLED, true);
-            if (!player.isCreative()) stack.decrement(1);
-            player.startRiding(gh);
-            Messages.sendMessage(serverPlayer, Text.translatable("gp.saddledAndRidden"), true);
-            return ActionResult.SUCCESS;
+         // 成年生物额外交互：潜行+右键切换待命
+         if (!gh.isBaby() && player.isSneaking()) {
+            toggleStayingMode(gh, player);
          }
 
          return ActionResult.PASS;
       });
+   }
+
+   // 类型检查与条件
+   private static boolean canProcess(net.minecraft.entity.player.PlayerEntity player,
+                                     net.minecraft.world.World world,
+                                     Hand hand,
+                                     net.minecraft.entity.Entity entity) {
+      if (world.isClient || hand != Hand.MAIN_HAND) return false;
+      if (!(player instanceof ServerPlayerEntity)) return false;
+      if (!(entity instanceof HappyGhastEntity)) return false;
+      return true;
+   }
+
+   // 防抖处理
+   private static boolean shouldProcessInteraction(UUID playerId, long tick) {
+      Long last = LAST_INTERACT_TICK.get(playerId);
+      if (last != null && tick - last < 2) return false;
+      LAST_INTERACT_TICK.put(playerId, tick);
+      return true;
+   }
+
+   private static ActionResult handleGoldenApple(HappyGhastEntity gh, ItemStack stack, ServerPlayerEntity player, boolean paused) {
+      if (!paused) {
+         gh.getDataTracker().set(HappyGhastData.AGE_PAUSED, true);
+         decrementIfNotCreative(player, stack);
+         Messages.sendMessage(player, Text.translatable("gp.growStop"), true);
+      } else {
+         Messages.sendMessage(player, Text.translatable("gp.growStopped"), true);
+      }
+      return ActionResult.SUCCESS;
+   }
+
+   private static ActionResult handleSugar(HappyGhastEntity gh, ItemStack stack, ServerPlayerEntity player, boolean paused) {
+      if (paused) {
+         gh.getDataTracker().set(HappyGhastData.AGE_PAUSED, false);
+         decrementIfNotCreative(player, stack);
+         Messages.sendMessage(player, Text.translatable("gp.unpaused"), true);
+      } else {
+         Messages.sendMessage(player, Text.translatable("gp.notPaused"), true);
+      }
+      return ActionResult.SUCCESS;
+   }
+
+   private static ActionResult handleBone(HappyGhastEntity gh, ItemStack stack, ServerPlayerEntity player, boolean paused) {
+      if (!paused) {
+         gh.growUp(-60, true);
+         gh.getNavigation().stop();
+         gh.getMoveControl().moveTo(gh.getX(), gh.getY(), gh.getZ(), 0.0D);
+         decrementIfNotCreative(player, stack);
+         Messages.sendMessage(player, Text.translatable("gp.ageReverted"), true);
+      } else {
+         Messages.sendMessage(player, Text.translatable("gp.cannotRevert"), true);
+      }
+      return ActionResult.SUCCESS;
+   }
+
+   private static ActionResult handleSnowball(HappyGhastEntity gh, ItemStack stack, ServerPlayerEntity player, boolean paused,
+                                              net.minecraft.entity.player.PlayerEntity p, Hand hand) {
+      if (paused) {
+         Messages.sendMessage(player, Text.translatable("gp.snowballPaused"), true);
+         return ActionResult.SUCCESS;
+      }
+      return gh.interact(p, hand);
+   }
+
+   private static ActionResult handleLead(HappyGhastEntity gh, ItemStack stack,
+                                          net.minecraft.entity.player.PlayerEntity player, Hand hand) {
+      int originalCount = stack.getCount();
+      ActionResult result = gh.interact(player, hand);
+      if (player.getAbilities().creativeMode) stack.setCount(originalCount);
+      return result;
+   }
+
+   private static ActionResult handleSaddle(HappyGhastEntity gh, ItemStack stack, ServerPlayerEntity player,
+                                            net.minecraft.entity.player.PlayerEntity p) {
+      if (!gh.isBaby()) {
+         Messages.sendMessage(player, Text.translatable("gp.onlyBabySaddle"), true);
+         return ActionResult.PASS;
+      }
+      gh.getDataTracker().set(HappyGhastData.SADDLED, true);
+      decrementIfNotCreative(player, stack);
+      player.startRiding(gh);
+      Messages.sendMessage(player, Text.translatable("gp.saddledAndRidden"), true);
+      return ActionResult.SUCCESS;
+   }
+
+   private static void decrementIfNotCreative(net.minecraft.entity.player.PlayerEntity player, ItemStack stack) {
+      if (!player.isCreative()) stack.decrement(1);
+   }
+
+   private static void toggleStayingMode(HappyGhastEntity gh, net.minecraft.entity.player.PlayerEntity player) {
+      boolean staying = gh.getDataTracker().get(HappyGhastData.STAYING);
+      gh.getDataTracker().set(HappyGhastData.STAYING, !staying);
+
+      if (!staying) {
+         if (gh.hasPassengers()) gh.removeAllPassengers();
+         gh.getMoveControl().moveTo(gh.getX(), gh.getY(), gh.getZ(), 0.0D);
+         gh.setVelocity(0, 0, 0);
+      }
    }
 }
