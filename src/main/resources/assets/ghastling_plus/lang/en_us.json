@@ -10,6 +10,7 @@
   "gp.ageReverted": "The entity's age has been reverted",
   "gp.snowballPaused": "Growth is paused; snowball has no effect",
   "gp.onlyBabySaddle": "Only baby Ghastlings can be saddled",
-  "gp.saddledAndRidden": "Saddled and mounted"
-
+  "gp.saddledAndRidden": "Saddled and mounted",
+  "gp.manualStayingOn": "Entered manual staying mode",
+  "gp.manualStayingOff": "Exited manual staying mode"
 }

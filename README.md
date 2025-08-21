@@ -18,3 +18,7 @@ The Ghastling-Plus mod allows players to control the growth, riding, and interac
 | **Bone**         | Revert growth  | Reverts 60 ticks of growth; only works if not paused.                                                                                                                  |
 | **Snowball**     | Interact       | If growth is paused, displays a message that interaction is not possible. Otherwise, triggers the entity's default interaction behavior.                               |
 | **Saddle**       | Equip and ride | Can only be equipped on baby Happy Ghasts for riding; adult Happy Ghasts cannot be directly saddled. After becoming an adult, the saddle will automatically disappear. |
+
+## Interaction
+
+- **Stealth (default: Shift) + Interact**: Using the sneak key while interacting with a Happy Ghast allows it to stay in place, even if its AI would normally move it around.

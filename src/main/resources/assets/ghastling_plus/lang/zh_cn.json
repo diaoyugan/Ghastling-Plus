@@ -10,5 +10,7 @@
   "gp.ageReverted": "已使其年龄回退",
   "gp.snowballPaused": "该生物的生长被暂停，无法加速生长",
   "gp.onlyBabySaddle": "只有幼年可以被装备鞍",
-  "gp.saddledAndRidden": "已装备鞍并骑上"
+  "gp.saddledAndRidden": "已装备鞍并骑上",
+  "gp.manualStayingOn": "已进入停留模式",
+  "gp.manualStayingOff": "已退出停留模式"
 }
