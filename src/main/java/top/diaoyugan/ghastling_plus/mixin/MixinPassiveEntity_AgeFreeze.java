@@ -1,6 +1,5 @@
 package top.diaoyugan.ghastling_plus.mixin;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.HappyGhastEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import org.spongepowered.asm.mixin.Mixin;

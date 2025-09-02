@@ -1,7 +1,6 @@
 package top.diaoyugan.ghastling_plus;
 
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
-import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.passive.HappyGhastEntity;
 import net.minecraft.item.ItemStack;
@@ -10,7 +9,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import top.diaoyugan.ghastling_plus.mixin.HappyGhastAccessor;
 
 import java.util.Map;
 import java.util.UUID;
@@ -60,8 +58,7 @@ public final class HappyGhastControl {
                                      net.minecraft.entity.Entity entity) {
       if (world.isClient || hand != Hand.MAIN_HAND) return false;
       if (!(player instanceof ServerPlayerEntity)) return false;
-      if (!(entity instanceof HappyGhastEntity)) return false;
-      return true;
+      return entity instanceof HappyGhastEntity;
    }
 
    // 防抖处理
