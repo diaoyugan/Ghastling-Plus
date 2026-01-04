@@ -22,9 +22,9 @@ public class Messages {
 
    public static void sendMessage(ServerPlayerEntity player, Text message, Boolean isOnActionbar) {
       if (isOnActionbar) {
-         Objects.requireNonNull(player.getServer()).execute(() -> player.sendMessage(message, true));
+         Objects.requireNonNull(player.getEntityWorld().getServer()).execute(() -> player.sendMessage(message, true));
       } else {
-         Objects.requireNonNull(player.getServer()).execute(() -> player.sendMessage(message, false));
+         Objects.requireNonNull(player.getEntityWorld().getServer()).execute(() -> player.sendMessage(message, false));
       }
    }
 

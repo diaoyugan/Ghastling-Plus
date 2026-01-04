@@ -56,7 +56,7 @@ public final class HappyGhastControl {
                                      net.minecraft.world.World world,
                                      Hand hand,
                                      net.minecraft.entity.Entity entity) {
-      if (world.isClient || hand != Hand.MAIN_HAND) return false;
+      if (world.isClient() || hand != Hand.MAIN_HAND) return false;
       if (!(player instanceof ServerPlayerEntity)) return false;
       return entity instanceof HappyGhastEntity;
    }

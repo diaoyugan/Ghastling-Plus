@@ -41,7 +41,7 @@ public abstract class MixinHappyGhastEntity {
       HappyGhastEntity self = (HappyGhastEntity)(Object)this;
 
       // 只在成年时处理；回退成幼年（如果有）不触发
-      if (!self.isBaby() && !self.getWorld().isClient()) {
+      if (!self.isBaby() && !self.getEntityWorld().isClient()) {
          var tracker = self.getDataTracker();
 
          // 卸鞍（如果当前有鞍）
